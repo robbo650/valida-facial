@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Captura de Fotos</title>
+    <style>
+        #camera-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: auto;
+        }
+        #camera {
+            width: 100%;
+            height: 100%;
+        }
+        #circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid red;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div id="camera-container">
+        <video id="camera" autoplay></video>
+        <div id="circle"></div>
+    </div>
+    <button id="capture">Tirar Foto</button>
+    <script>
+        const video = document.getElementById('camera');
+        const captureButton = document.getElementById('capture');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => {
+                console.error("Erro ao acessar a câmera: ", err);
+            });
+
+        captureButton.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Aqui você pode adicionar a lógica para validar o enquadramento do rosto
+            // e exibir a mensagem "OK" ou "Aguarde, validando informações".
+
+            const image = canvas.toDataURL('image/png');
+            console.log(image); // Aqui você pode enviar a imagem para o servidor
+        });
+    </script>
+</body>
+</html>
