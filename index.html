@@ -35,7 +35,7 @@
             height: 200px;
             border: 3px solid red;
             border-radius: 50%;
-            pointer-events: none; /* Impede que o círculo interfira com cliques */
+            pointer-events: none;
         }
         #capture {
             margin-top: 20px;
@@ -64,7 +64,23 @@
         <div id="circle"></div>
         <button id="capture" disabled>Tirar Foto</button>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
     <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            projectId: "SEU_PROJETO",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "SEU_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        // Inicialize o Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+
         const video = document.getElementById('camera');
         const captureButton = document.getElementById('capture');
 
@@ -72,7 +88,7 @@
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
                 video.srcObject = stream;
-                captureButton.disabled = false; // Habilita o botão após a câmera iniciar
+                captureButton.disabled = false;
             })
             .catch(err => {
                 console.error("Erro ao acessar a câmera: ", err);
@@ -85,16 +101,26 @@
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             const context = canvas.getContext('2d');
-
-            // Desenha apenas o vídeo no canvas (sem o círculo)
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Aqui você pode adicionar a lógica para validar o enquadramento do rosto
-            // e exibir a mensagem "OK" ou "Aguarde, validando informações".
+            // Salvar a foto no celular do usuário
+            const link = document.createElement('a');
+            link.download = 'foto.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            alert('Foto salva no seu celular!');
 
-            const image = canvas.toDataURL('image/png');
-            console.log(image); // Aqui você pode enviar a imagem para o servidor
-            alert("Foto capturada com sucesso!");
+            // Salvar a foto no Firebase (opcional)
+            canvas.toBlob((blob) => {
+                const file = new File([blob], 'foto.png', { type: 'image/png' });
+                const storageRef = storage.ref();
+                const fotoRef = storageRef.child(`fotos/${Date.now()}.png`);
+                fotoRef.put(file).then((snapshot) => {
+                    console.log('Foto salva no Firebase!');
+                }).catch((error) => {
+                    console.error('Erro ao salvar a foto no Firebase: ', error);
+                });
+            }, 'image/png');
         });
     </script>
 </body>
