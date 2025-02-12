@@ -140,7 +140,10 @@
             link.download = 'foto.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
-            alert('Foto salva no seu celular!');
+
+            // Redirecionar de volta ao Typebot
+            const typebotUrl = "https://typebot.io/seu-bot"; // Substitua pelo link do seu Typebot
+            window.location.href = typebotUrl;
         });
     </script>
 </body>
