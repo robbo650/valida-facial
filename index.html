@@ -104,6 +104,7 @@
         // Iniciar a câmera após o usuário clicar no botão
         startCameraButton.addEventListener('click', async () => {
             try {
+                // Solicitar permissão para acessar a câmera
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
 
@@ -122,6 +123,7 @@
             } catch (err) {
                 console.error("Erro ao acessar a câmera: ", err);
                 alert("Erro ao acessar a câmera. Verifique as permissões.");
+                startCameraButton.textContent = "Tentar Novamente"; // Altera o texto do botão
             }
         });
 
