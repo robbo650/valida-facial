@@ -48,6 +48,8 @@
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease;
+            position: relative;
+            z-index: 10;
         }
         #capture:disabled {
             background-color: #ccc;
@@ -64,23 +66,7 @@
         <div id="circle"></div>
         <button id="capture" disabled>Tirar Foto</button>
     </div>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
     <script>
-        // Configuração do Firebase
-        const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_PROJETO.firebaseapp.com",
-            projectId: "SEU_PROJETO",
-            storageBucket: "SEU_PROJETO.appspot.com",
-            messagingSenderId: "SEU_SENDER_ID",
-            appId: "SEU_APP_ID"
-        };
-
-        // Inicialize o Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const storage = firebase.storage();
-
         const video = document.getElementById('camera');
         const captureButton = document.getElementById('capture');
 
@@ -88,7 +74,8 @@
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
                 video.srcObject = stream;
-                captureButton.disabled = false;
+                captureButton.disabled = false; // Habilita o botão
+                console.log("Câmera acessada com sucesso!");
             })
             .catch(err => {
                 console.error("Erro ao acessar a câmera: ", err);
@@ -109,18 +96,6 @@
             link.href = canvas.toDataURL('image/png');
             link.click();
             alert('Foto salva no seu celular!');
-
-            // Salvar a foto no Firebase (opcional)
-            canvas.toBlob((blob) => {
-                const file = new File([blob], 'foto.png', { type: 'image/png' });
-                const storageRef = storage.ref();
-                const fotoRef = storageRef.child(`fotos/${Date.now()}.png`);
-                fotoRef.put(file).then((snapshot) => {
-                    console.log('Foto salva no Firebase!');
-                }).catch((error) => {
-                    console.error('Erro ao salvar a foto no Firebase: ', error);
-                });
-            }, 'image/png');
         });
     </script>
 </body>
