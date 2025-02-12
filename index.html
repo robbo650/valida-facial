@@ -102,23 +102,27 @@
         const instruction = document.getElementById('instruction');
 
         // Iniciar a câmera após o usuário clicar no botão
-        startCameraButton.addEventListener('click', () => {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(stream => {
-                    video.srcObject = stream;
-                    video.play(); // Inicia o vídeo manualmente
-                    captureButton.disabled = false; // Habilita o botão "Tirar Foto"
-                    startCameraButton.style.display = 'none'; // Esconde o botão "Iniciar Câmera"
-                    video.style.display = 'block'; // Mostra o vídeo
-                    square.style.display = 'block'; // Mostra o quadrado
-                    instruction.style.display = 'block'; // Mostra a instrução
-                    captureButton.style.display = 'block'; // Mostra o botão "Tirar Foto"
-                    console.log("Câmera acessada com sucesso!");
-                })
-                .catch(err => {
-                    console.error("Erro ao acessar a câmera: ", err);
-                    alert("Erro ao acessar a câmera. Verifique as permissões.");
-                });
+        startCameraButton.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+
+                // Forçar a reprodução do vídeo manualmente
+                await video.play();
+
+                // Mostrar elementos
+                startCameraButton.style.display = 'none';
+                video.style.display = 'block';
+                square.style.display = 'block';
+                instruction.style.display = 'block';
+                captureButton.style.display = 'block';
+                captureButton.disabled = false;
+
+                console.log("Câmera acessada com sucesso!");
+            } catch (err) {
+                console.error("Erro ao acessar a câmera: ", err);
+                alert("Erro ao acessar a câmera. Verifique as permissões.");
+            }
         });
 
         // Capturar foto
