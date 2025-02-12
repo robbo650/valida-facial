@@ -25,17 +25,44 @@
             height: auto;
             border: 2px solid #ccc;
             border-radius: 10px;
+            display: none; /* Esconde a câmera inicialmente */
         }
-        #circle {
+        #square {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 200px;
-            height: 200px;
+            height: 250px;
             border: 3px solid red;
-            border-radius: 50%;
             pointer-events: none;
+            display: none; /* Esconde o quadrado inicialmente */
+        }
+        #instruction {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: red;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            display: none; /* Esconde a instrução inicialmente */
+        }
+        #start-camera {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
         }
         #capture {
             margin-top: 20px;
@@ -48,8 +75,7 @@
             cursor: pointer;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             transition: background-color 0.3s ease;
-            position: relative;
-            z-index: 10;
+            display: none; /* Esconde o botão "Tirar Foto" inicialmente */
         }
         #capture:disabled {
             background-color: #ccc;
@@ -63,24 +89,37 @@
 <body>
     <div id="camera-container">
         <video id="camera" autoplay></video>
-        <div id="circle"></div>
+        <div id="square"></div>
+        <div id="instruction">Posicione o rosto dentro do quadrado</div>
+        <button id="start-camera">Iniciar Câmera</button>
         <button id="capture" disabled>Tirar Foto</button>
     </div>
     <script>
         const video = document.getElementById('camera');
+        const startCameraButton = document.getElementById('start-camera');
         const captureButton = document.getElementById('capture');
+        const square = document.getElementById('square');
+        const instruction = document.getElementById('instruction');
 
-        // Solicitar acesso à câmera
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                video.srcObject = stream;
-                captureButton.disabled = false; // Habilita o botão
-                console.log("Câmera acessada com sucesso!");
-            })
-            .catch(err => {
-                console.error("Erro ao acessar a câmera: ", err);
-                alert("Erro ao acessar a câmera. Verifique as permissões.");
-            });
+        // Iniciar a câmera após o usuário clicar no botão
+        startCameraButton.addEventListener('click', () => {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.play(); // Inicia o vídeo manualmente
+                    captureButton.disabled = false; // Habilita o botão "Tirar Foto"
+                    startCameraButton.style.display = 'none'; // Esconde o botão "Iniciar Câmera"
+                    video.style.display = 'block'; // Mostra o vídeo
+                    square.style.display = 'block'; // Mostra o quadrado
+                    instruction.style.display = 'block'; // Mostra a instrução
+                    captureButton.style.display = 'block'; // Mostra o botão "Tirar Foto"
+                    console.log("Câmera acessada com sucesso!");
+                })
+                .catch(err => {
+                    console.error("Erro ao acessar a câmera: ", err);
+                    alert("Erro ao acessar a câmera. Verifique as permissões.");
+                });
+        });
 
         // Capturar foto
         captureButton.addEventListener('click', () => {
